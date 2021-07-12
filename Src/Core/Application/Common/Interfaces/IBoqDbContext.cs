@@ -8,6 +8,7 @@ namespace Application.Common.Interfaces
     public interface IBoqDbContext
     {
         DbSet<WorkOrder> workOrders { get; set; }
+        DbSet<StandardSpecification> standardSpecifications { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

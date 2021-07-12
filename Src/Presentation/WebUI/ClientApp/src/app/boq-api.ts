@@ -14,8 +14,325 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
+export interface IBOQReportClient {
+    get(wono: string | null): Observable<BOQReportModel[]>;
+}
+
+@Injectable()
+export class BOQReportClient implements IBOQReportClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    get(wono: string | null): Observable<BOQReportModel[]> {
+        let url_ = this.baseUrl + "/api/BOQReport/Get/{wono}";
+        if (wono === undefined || wono === null)
+            throw new Error("The parameter 'wono' must be defined.");
+        url_ = url_.replace("{wono}", encodeURIComponent("" + wono));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGet(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGet(<any>response_);
+                } catch (e) {
+                    return <Observable<BOQReportModel[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<BOQReportModel[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGet(response: HttpResponseBase): Observable<BOQReportModel[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(BOQReportModel.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BOQReportModel[]>(<any>null);
+    }
+}
+
+export interface IStandardSpecificationClient {
+    get(id: number): Observable<StandardSpecificationViewModel>;
+    upsert(command: UpsertStandardSpecificationCommand): Observable<number>;
+    getAll(): Observable<StandardSpecificationListModel>;
+    delete(id: number): Observable<void>;
+}
+
+@Injectable()
+export class StandardSpecificationClient implements IStandardSpecificationClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    get(id: number): Observable<StandardSpecificationViewModel> {
+        let url_ = this.baseUrl + "/api/StandardSpecification/Get/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGet(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGet(<any>response_);
+                } catch (e) {
+                    return <Observable<StandardSpecificationViewModel>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<StandardSpecificationViewModel>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGet(response: HttpResponseBase): Observable<StandardSpecificationViewModel> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = StandardSpecificationViewModel.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StandardSpecificationViewModel>(<any>null);
+    }
+
+    upsert(command: UpsertStandardSpecificationCommand): Observable<number> {
+        let url_ = this.baseUrl + "/api/StandardSpecification/Upsert";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpsert(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpsert(<any>response_);
+                } catch (e) {
+                    return <Observable<number>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<number>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpsert(response: HttpResponseBase): Observable<number> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return _observableOf(result200);
+            }));
+        } else {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let resultdefault: any = null;
+            let resultDatadefault = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            resultdefault = ProblemDetails.fromJS(resultDatadefault);
+            return throwException("A server side error occurred.", status, _responseText, _headers, resultdefault);
+            }));
+        }
+    }
+
+    getAll(): Observable<StandardSpecificationListModel> {
+        let url_ = this.baseUrl + "/api/StandardSpecification/GetAll";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAll(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAll(<any>response_);
+                } catch (e) {
+                    return <Observable<StandardSpecificationListModel>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<StandardSpecificationListModel>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAll(response: HttpResponseBase): Observable<StandardSpecificationListModel> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = StandardSpecificationListModel.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StandardSpecificationListModel>(<any>null);
+    }
+
+    delete(id: number): Observable<void> {
+        let url_ = this.baseUrl + "/api/StandardSpecification/Delete/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+}
+
 export interface IWorkOrderClient {
+    get(id: number): Observable<WorkOrderModel>;
     upsert(path: string | null | undefined): Observable<void>;
+    getAll(): Observable<WorkOrderListModel>;
+    delete(id: number): Observable<void>;
 }
 
 @Injectable()
@@ -27,6 +344,64 @@ export class WorkOrderClient implements IWorkOrderClient {
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    get(id: number): Observable<WorkOrderModel> {
+        let url_ = this.baseUrl + "/api/WorkOrder/Get/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGet(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGet(<any>response_);
+                } catch (e) {
+                    return <Observable<WorkOrderModel>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<WorkOrderModel>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGet(response: HttpResponseBase): Observable<WorkOrderModel> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WorkOrderModel.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WorkOrderModel>(<any>null);
     }
 
     upsert(path: string | null | undefined): Observable<void> {
@@ -76,6 +451,192 @@ export class WorkOrderClient implements IWorkOrderClient {
             }));
         }
     }
+
+    getAll(): Observable<WorkOrderListModel> {
+        let url_ = this.baseUrl + "/api/WorkOrder/GetAll";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAll(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAll(<any>response_);
+                } catch (e) {
+                    return <Observable<WorkOrderListModel>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<WorkOrderListModel>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAll(response: HttpResponseBase): Observable<WorkOrderListModel> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WorkOrderListModel.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WorkOrderListModel>(<any>null);
+    }
+
+    delete(id: number): Observable<void> {
+        let url_ = this.baseUrl + "/api/WorkOrder/Delete/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+}
+
+export class BOQReportModel implements IBOQReportModel {
+    slNo!: number;
+    orderNo?: string | undefined;
+    productCode?: string | undefined;
+    productName?: string | undefined;
+    orderQty!: number;
+    matCode?: string | undefined;
+    matName?: string | undefined;
+    matUnit?: string | undefined;
+    ups?: string | undefined;
+    paperQty!: number;
+    totalPack!: number;
+    approxUnitRate!: number;
+    totalAmountIncludeCarrying!: number;
+
+    constructor(data?: IBOQReportModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.slNo = _data["slNo"];
+            this.orderNo = _data["orderNo"];
+            this.productCode = _data["productCode"];
+            this.productName = _data["productName"];
+            this.orderQty = _data["orderQty"];
+            this.matCode = _data["matCode"];
+            this.matName = _data["matName"];
+            this.matUnit = _data["matUnit"];
+            this.ups = _data["ups"];
+            this.paperQty = _data["paperQty"];
+            this.totalPack = _data["totalPack"];
+            this.approxUnitRate = _data["approxUnitRate"];
+            this.totalAmountIncludeCarrying = _data["totalAmountIncludeCarrying"];
+        }
+    }
+
+    static fromJS(data: any): BOQReportModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new BOQReportModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["slNo"] = this.slNo;
+        data["orderNo"] = this.orderNo;
+        data["productCode"] = this.productCode;
+        data["productName"] = this.productName;
+        data["orderQty"] = this.orderQty;
+        data["matCode"] = this.matCode;
+        data["matName"] = this.matName;
+        data["matUnit"] = this.matUnit;
+        data["ups"] = this.ups;
+        data["paperQty"] = this.paperQty;
+        data["totalPack"] = this.totalPack;
+        data["approxUnitRate"] = this.approxUnitRate;
+        data["totalAmountIncludeCarrying"] = this.totalAmountIncludeCarrying;
+        return data; 
+    }
+}
+
+export interface IBOQReportModel {
+    slNo: number;
+    orderNo?: string | undefined;
+    productCode?: string | undefined;
+    productName?: string | undefined;
+    orderQty: number;
+    matCode?: string | undefined;
+    matName?: string | undefined;
+    matUnit?: string | undefined;
+    ups?: string | undefined;
+    paperQty: number;
+    totalPack: number;
+    approxUnitRate: number;
+    totalAmountIncludeCarrying: number;
 }
 
 export class ProblemDetails implements IProblemDetails {
@@ -128,6 +689,297 @@ export interface IProblemDetails {
     status?: number | undefined;
     detail?: string | undefined;
     instance?: string | undefined;
+}
+
+export class StandardSpecificationViewModel implements IStandardSpecificationViewModel {
+    model?: StandardSpecificationModel | undefined;
+
+    constructor(data?: IStandardSpecificationViewModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.model = _data["model"] ? StandardSpecificationModel.fromJS(_data["model"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): StandardSpecificationViewModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new StandardSpecificationViewModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["model"] = this.model ? this.model.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IStandardSpecificationViewModel {
+    model?: StandardSpecificationModel | undefined;
+}
+
+export class StandardSpecificationModel implements IStandardSpecificationModel {
+    id!: number;
+    productCode?: string | undefined;
+    productName?: string | undefined;
+    unit?: string | undefined;
+    productType?: string | undefined;
+    averageRate!: number;
+    quantityInPack!: number;
+    procurementSource?: string | undefined;
+    openingBalance!: number;
+    remarks?: string | undefined;
+
+    constructor(data?: IStandardSpecificationModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.productCode = _data["productCode"];
+            this.productName = _data["productName"];
+            this.unit = _data["unit"];
+            this.productType = _data["productType"];
+            this.averageRate = _data["averageRate"];
+            this.quantityInPack = _data["quantityInPack"];
+            this.procurementSource = _data["procurementSource"];
+            this.openingBalance = _data["openingBalance"];
+            this.remarks = _data["remarks"];
+        }
+    }
+
+    static fromJS(data: any): StandardSpecificationModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new StandardSpecificationModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["productCode"] = this.productCode;
+        data["productName"] = this.productName;
+        data["unit"] = this.unit;
+        data["productType"] = this.productType;
+        data["averageRate"] = this.averageRate;
+        data["quantityInPack"] = this.quantityInPack;
+        data["procurementSource"] = this.procurementSource;
+        data["openingBalance"] = this.openingBalance;
+        data["remarks"] = this.remarks;
+        return data; 
+    }
+}
+
+export interface IStandardSpecificationModel {
+    id: number;
+    productCode?: string | undefined;
+    productName?: string | undefined;
+    unit?: string | undefined;
+    productType?: string | undefined;
+    averageRate: number;
+    quantityInPack: number;
+    procurementSource?: string | undefined;
+    openingBalance: number;
+    remarks?: string | undefined;
+}
+
+export class UpsertStandardSpecificationCommand extends StandardSpecificationModel implements IUpsertStandardSpecificationCommand {
+
+    constructor(data?: IUpsertStandardSpecificationCommand) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+    }
+
+    static fromJS(data: any): UpsertStandardSpecificationCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpsertStandardSpecificationCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data; 
+    }
+}
+
+export interface IUpsertStandardSpecificationCommand extends IStandardSpecificationModel {
+}
+
+export class StandardSpecificationListModel implements IStandardSpecificationListModel {
+    listModel?: StandardSpecificationModel[] | undefined;
+
+    constructor(data?: IStandardSpecificationListModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["listModel"])) {
+                this.listModel = [] as any;
+                for (let item of _data["listModel"])
+                    this.listModel!.push(StandardSpecificationModel.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): StandardSpecificationListModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new StandardSpecificationListModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.listModel)) {
+            data["listModel"] = [];
+            for (let item of this.listModel)
+                data["listModel"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IStandardSpecificationListModel {
+    listModel?: StandardSpecificationModel[] | undefined;
+}
+
+export class WorkOrderModel implements IWorkOrderModel {
+    id!: number;
+    productCode?: string | undefined;
+    productName?: string | undefined;
+    unit?: string | undefined;
+    quantity!: number;
+    specification?: string | undefined;
+    unitPrice!: number;
+    workOrderno?: string | undefined;
+    createdDate!: Date;
+
+    constructor(data?: IWorkOrderModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.productCode = _data["productCode"];
+            this.productName = _data["productName"];
+            this.unit = _data["unit"];
+            this.quantity = _data["quantity"];
+            this.specification = _data["specification"];
+            this.unitPrice = _data["unitPrice"];
+            this.workOrderno = _data["workOrderno"];
+            this.createdDate = _data["createdDate"] ? new Date(_data["createdDate"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): WorkOrderModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new WorkOrderModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["productCode"] = this.productCode;
+        data["productName"] = this.productName;
+        data["unit"] = this.unit;
+        data["quantity"] = this.quantity;
+        data["specification"] = this.specification;
+        data["unitPrice"] = this.unitPrice;
+        data["workOrderno"] = this.workOrderno;
+        data["createdDate"] = this.createdDate ? this.createdDate.toISOString() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IWorkOrderModel {
+    id: number;
+    productCode?: string | undefined;
+    productName?: string | undefined;
+    unit?: string | undefined;
+    quantity: number;
+    specification?: string | undefined;
+    unitPrice: number;
+    workOrderno?: string | undefined;
+    createdDate: Date;
+}
+
+export class WorkOrderListModel implements IWorkOrderListModel {
+    workOrders?: WorkOrderModel[] | undefined;
+
+    constructor(data?: IWorkOrderListModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["workOrders"])) {
+                this.workOrders = [] as any;
+                for (let item of _data["workOrders"])
+                    this.workOrders!.push(WorkOrderModel.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): WorkOrderListModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new WorkOrderListModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.workOrders)) {
+            data["workOrders"] = [];
+            for (let item of this.workOrders)
+                data["workOrders"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IWorkOrderListModel {
+    workOrders?: WorkOrderModel[] | undefined;
 }
 
 export class SwaggerException extends Error {

@@ -12,6 +12,7 @@ namespace Application.Model.WorkOrders
         public string NAME { get; set; }
         public double QUANTITY { get; set; }
         public string UNIT { get; set; }
-
+        public double UNITPRICE { get; set; }
+        public string WONO { get; set; }
     }
 }

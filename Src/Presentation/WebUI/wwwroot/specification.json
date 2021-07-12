@@ -11,6 +11,198 @@
     "text/json"
   ],
   "paths": {
+    "/api/BOQReport/Get/{wono}": {
+      "get": {
+        "tags": [
+          "BOQReport"
+        ],
+        "operationId": "BOQReport_Get",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "wono",
+            "in": "path",
+            "required": true,
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/BOQReportModel"
+              }
+            }
+          },
+          "404": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/StandardSpecification/Get/{id}": {
+      "get": {
+        "tags": [
+          "StandardSpecification"
+        ],
+        "operationId": "StandardSpecification_Get",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "format": "int32",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/StandardSpecificationViewModel"
+            }
+          },
+          "404": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/StandardSpecification/Upsert": {
+      "post": {
+        "tags": [
+          "StandardSpecification"
+        ],
+        "operationId": "StandardSpecification_Upsert",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "name": "command",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpsertStandardSpecificationCommand"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "default": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/StandardSpecification/GetAll": {
+      "get": {
+        "tags": [
+          "StandardSpecification"
+        ],
+        "operationId": "StandardSpecification_GetAll",
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/StandardSpecificationListModel"
+            }
+          }
+        }
+      }
+    },
+    "/api/StandardSpecification/Delete/{id}": {
+      "delete": {
+        "tags": [
+          "StandardSpecification"
+        ],
+        "operationId": "StandardSpecification_Delete",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "format": "int32",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "404": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/WorkOrder/Get/{id}": {
+      "get": {
+        "tags": [
+          "WorkOrder"
+        ],
+        "operationId": "WorkOrder_Get",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "format": "int32",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/WorkOrderModel"
+            }
+          },
+          "404": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
+    },
     "/api/WorkOrder/Upsert": {
       "post": {
         "tags": [
@@ -38,9 +230,114 @@
           }
         }
       }
+    },
+    "/api/WorkOrder/GetAll": {
+      "get": {
+        "tags": [
+          "WorkOrder"
+        ],
+        "operationId": "WorkOrder_GetAll",
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/WorkOrderListModel"
+            }
+          }
+        }
+      }
+    },
+    "/api/WorkOrder/Delete/{id}": {
+      "delete": {
+        "tags": [
+          "WorkOrder"
+        ],
+        "operationId": "WorkOrder_Delete",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "format": "int32",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "404": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
+    "BOQReportModel": {
+      "type": "object",
+      "required": [
+        "slNo",
+        "orderQty",
+        "paperQty",
+        "totalPack",
+        "approxUnitRate",
+        "totalAmountIncludeCarrying"
+      ],
+      "properties": {
+        "slNo": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "orderNo": {
+          "type": "string"
+        },
+        "productCode": {
+          "type": "string"
+        },
+        "productName": {
+          "type": "string"
+        },
+        "orderQty": {
+          "type": "number",
+          "format": "double"
+        },
+        "matCode": {
+          "type": "string"
+        },
+        "matName": {
+          "type": "string"
+        },
+        "matUnit": {
+          "type": "string"
+        },
+        "ups": {
+          "type": "string"
+        },
+        "paperQty": {
+          "type": "number",
+          "format": "double"
+        },
+        "totalPack": {
+          "type": "number",
+          "format": "double"
+        },
+        "approxUnitRate": {
+          "type": "number",
+          "format": "decimal"
+        },
+        "totalAmountIncludeCarrying": {
+          "type": "number",
+          "format": "decimal"
+        }
+      }
+    },
     "ProblemDetails": {
       "type": "object",
       "additionalProperties": {},
@@ -60,6 +357,133 @@
         },
         "instance": {
           "type": "string"
+        }
+      }
+    },
+    "StandardSpecificationViewModel": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "$ref": "#/definitions/StandardSpecificationModel"
+        }
+      }
+    },
+    "StandardSpecificationModel": {
+      "type": "object",
+      "required": [
+        "id",
+        "averageRate",
+        "quantityInPack",
+        "openingBalance"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "productCode": {
+          "type": "string"
+        },
+        "productName": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "productType": {
+          "type": "string"
+        },
+        "averageRate": {
+          "type": "number",
+          "format": "double"
+        },
+        "quantityInPack": {
+          "type": "number",
+          "format": "double"
+        },
+        "procurementSource": {
+          "type": "string"
+        },
+        "openingBalance": {
+          "type": "number",
+          "format": "double"
+        },
+        "remarks": {
+          "type": "string"
+        }
+      }
+    },
+    "UpsertStandardSpecificationCommand": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/StandardSpecificationModel"
+        },
+        {
+          "type": "object"
+        }
+      ]
+    },
+    "StandardSpecificationListModel": {
+      "type": "object",
+      "properties": {
+        "listModel": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StandardSpecificationModel"
+          }
+        }
+      }
+    },
+    "WorkOrderModel": {
+      "type": "object",
+      "required": [
+        "id",
+        "quantity",
+        "unitPrice",
+        "createdDate"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "productCode": {
+          "type": "string"
+        },
+        "productName": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "number",
+          "format": "double"
+        },
+        "specification": {
+          "type": "string"
+        },
+        "unitPrice": {
+          "type": "number",
+          "format": "double"
+        },
+        "workOrderno": {
+          "type": "string"
+        },
+        "createdDate": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "WorkOrderListModel": {
+      "type": "object",
+      "properties": {
+        "workOrders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/WorkOrderModel"
+          }
         }
       }
     }

@@ -12,7 +12,8 @@ namespace Persistence
          : base(options)
         {
         }
-        public DbSet<WorkOrder> workOrders { get; set ; }
+        public DbSet<WorkOrder> workOrders { get; set; }
+        public DbSet<StandardSpecification> standardSpecifications { get; set; }
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             //foreach (var entry in ChangeTracker.Entries<AuditableEntity>())

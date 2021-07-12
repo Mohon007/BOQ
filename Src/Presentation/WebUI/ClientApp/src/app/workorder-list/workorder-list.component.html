@@ -1,0 +1,61 @@
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+    <h1 style="padding-left:50px;padding-right:50px" >Work Order List</h1>
+    <input #csvInput hidden="true" type="file" onclick="this.value=null" (change)="csvInputChange($event)" accept=".csv" />
+    <button  mat-flat-button color="primary"  (click)="csvInput.click()">Choose Spreadsheet File (CSV)</button>
+  </mat-toolbar-row>
+</mat-toolbar>
+<table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+
+  <!--- Note that these columns can be defined in any order.
+        The actual rendered columns are set as a property on the row definition" -->
+  <!-- Position Column -->
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+    <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="workOrderno">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> Work Order No </th>
+    <td mat-cell *matCellDef="let element"> {{element.workOrderno}} </td>
+  </ng-container>
+
+  <!-- Name Column -->
+  <ng-container matColumnDef="productCode">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> productCode </th>
+    <td mat-cell *matCellDef="let element"> {{element.productCode}} </td>
+  </ng-container>
+
+  <!-- Weight Column -->
+  <ng-container matColumnDef="productName">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> productName </th>
+    <td mat-cell *matCellDef="let element"> {{element.productName}} </td>
+  </ng-container>
+
+  <!-- Symbol Column -->
+  <ng-container matColumnDef="unit">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> unit </th>
+    <td mat-cell *matCellDef="let element"> {{element.unit}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="quantity">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> quantity </th>
+    <td mat-cell *matCellDef="let element"> {{element.quantity}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="unitPrice">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> unitPrice </th>
+    <td mat-cell *matCellDef="let element"> {{element.unitPrice}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="createdDate">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Date </th>
+    <td mat-cell *matCellDef="let element"> {{element.createdDate| date:'dd-MM-yyyy'}} </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+<mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+

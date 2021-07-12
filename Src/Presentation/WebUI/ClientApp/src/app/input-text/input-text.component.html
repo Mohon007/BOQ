@@ -1,0 +1,22 @@
+<div class="ui-fluid">
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label *ngIf="required && caption !=  undefined">{{caption}}</mat-label>
+    <input matInput [placeholder]="placeholderText" [(ngModel)]="value"  (input)="onChange()"
+         (change)="onChange()"
+         (blur)="onTouchedFn()">
+    {{errors[0]}}
+  </mat-form-field>
+
+  <!--<span>{{caption}} <span *ngIf="required && caption !=  undefined"> *</span></span>
+  <input [placeholder]="placeholderText"
+         [(ngModel)]="value"
+         [ngModelOptions]="{standalone: true}"
+         [minlength]="minlength"
+         [required]="required"
+         [disabled]="disabled"
+         (input)="onChange()"
+         (change)="onChange()"
+         (blur)="onTouchedFn()" />
+  {{errors[0]}}-->
+</div>
+

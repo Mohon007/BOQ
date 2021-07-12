@@ -1,0 +1,69 @@
+
+<form #form="ngForm" (ngSubmit)="onSubmit(form)" name="form1">
+  <mat-toolbar color="primary">
+    <mat-toolbar-row>
+      <div class="example-button-row">
+        <button mat-icon-button color="accent" (click)="NewEntry()" aria-label="Example icon-button with a heart icon">
+          <mat-icon>add</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="Close()" aria-label="Example icon-button with a heart icon">
+          <mat-icon>clear</mat-icon>
+        </button>
+
+      </div>
+      <span class="example-spacer"></span>
+      <h1>Material Information Detail</h1>
+    </mat-toolbar-row>
+  </mat-toolbar>
+  <mat-card>
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label for="productCode">Product Code</label>
+        <input [(ngModel)]="model.productCode" class="form-control" name="productCode" placeholder="Product Code">
+      </div>
+      <div class="form-group col-md-4">
+        <label for="productName">Product Name</label>
+        <input [(ngModel)]="model.productName" class="form-control" name="productName" placeholder="Product Name">
+      </div>
+      <div class="form-group col-md-4">
+        <label for="unit">Unit</label>
+        <input class="form-control" [(ngModel)]="model.unit" name="unit" placeholder="Unit">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label for=" productType"> Product Type</label>
+        <input  [(ngModel)]="model.productType" class="form-control" name="productType" placeholder="ProductType">
+      </div>
+      <div class="form-group col-md-4">
+        <label for="averageRate"> Average Rate</label>
+        <input [(ngModel)]="model.averageRate"  class="form-control" name="averageRate" placeholder="Average Rate">
+      </div>
+      <div class="form-group col-md-4">
+        <label for="quantityInPack">Quantity In Pack</label>
+        <input [(ngModel)]="model.quantityInPack"  class="form-control" name="quantityInPack" placeholder="Quantity InPack">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label for="procurementSource">Procurement Source</label>
+        <input  [(ngModel)]="model.procurementSource" class="form-control" name="procurementSource" placeholder="Procurement Source">
+      </div>
+      <div class="form-group col-md-4">
+        <label for="openingBalance"> Opening Balance</label>
+        <input [(ngModel)]="model.openingBalance" class="form-control" name="openingBalance" placeholder="Opening Balance">
+      </div>
+      <div class="form-group col-md-4">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-8">
+        <label for="remarks">Remarks</label>
+        <input  [(ngModel)]="model.remarks" class="form-control" name="remarks" placeholder="Remarks">
+      </div>
+   
+    </div>
+
+    <button type="submit" class="btn btn-primary">{{saveButtonText}}</button>
+  </mat-card>
+</form>
