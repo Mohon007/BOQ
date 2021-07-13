@@ -50,6 +50,10 @@
     <TypeScriptCompile Include="ClientApp\src\app\boq-api.ts" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\workorder\" />
+  </ItemGroup>
+
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>

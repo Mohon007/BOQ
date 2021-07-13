@@ -203,20 +203,12 @@
         }
       }
     },
-    "/api/WorkOrder/Upsert": {
+    "/api/WorkOrder/Upload": {
       "post": {
         "tags": [
           "WorkOrder"
         ],
-        "operationId": "WorkOrder_Upsert",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "path",
-            "in": "query",
-            "x-nullable": true
-          }
-        ],
+        "operationId": "WorkOrder_Upload",
         "responses": {
           "200": {
             "description": ""

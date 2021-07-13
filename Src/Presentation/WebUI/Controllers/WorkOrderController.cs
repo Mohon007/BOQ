@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace WebUI.Controllers
@@ -27,31 +29,48 @@ namespace WebUI.Controllers
             };
             return Ok(vm);
         }
+      
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        public async Task<IActionResult> Upsert(string path)
+        public async Task<IActionResult> Upload()
         {
-            List<int> ids = new List<int>();
-            var value = CsvFileHelper.ReadCsvFile<WorkOrderDummyModel>("wwwroot/WorkOrder.csv");
-            foreach (var item in value)
+
+            var file = Request.Form.Files[0];
+            //var folderName = Path.Combine("Resources", "Images");
+            //var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+            if (file.Length > 0)
             {
-                UpsertWorkOrderCommand command = new UpsertWorkOrderCommand();
-                command.Id = 0;
-                command.ProductCode = item.CODE;
-                command.ProductName = item.NAME;
-                command.Quantity = item.QUANTITY;
-                command.Unit = item.UNIT;
-                command.UnitPrice = item.UNITPRICE;
-                command.CreatedDate = DateTime.Now;
-                command.WorkOrderno = item.WONO;
-                var id = await Mediator.Send(command);
-                ids.Add(id);
+                var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+                var fullPath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\workorder", fileName);
+                using (var stream = new FileStream(fullPath, FileMode.Create))
+                {
+                   await file.CopyToAsync(stream);
+                }
+                List<int> ids = new List<int>();
+                var value = CsvFileHelper.ReadCsvFile<WorkOrderDummyModel>("wwwroot/workorder/" + fileName);
+                foreach (var item in value)
+                {
+                    UpsertWorkOrderCommand command = new UpsertWorkOrderCommand();
+                    command.Id = 0;
+                    command.ProductCode = item.CODE;
+                    command.ProductName = item.NAME;
+                    command.Quantity = item.QUANTITY;
+                    command.Unit = item.UNIT;
+                    command.UnitPrice = item.UNITPRICE;
+                    command.CreatedDate = DateTime.Now;
+                    command.WorkOrderno = item.WONO;
+                    var id = await Mediator.Send(command);
+                    ids.Add(id);
+                }
+                return Ok(ids);
             }
-
-            return Ok(ids);
+            else
+            {
+                return BadRequest();
+            }
+        
         }
-
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<WorkOrderListModel>> GetAll()

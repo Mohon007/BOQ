@@ -1,9 +1,19 @@
 <mat-toolbar color="primary">
   <mat-toolbar-row>
     <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
-    <h1 style="padding-left:50px;padding-right:50px" >Work Order List</h1>
-    <input #csvInput hidden="true" type="file" onclick="this.value=null" (change)="csvInputChange($event)" accept=".csv" />
-    <button  mat-flat-button color="primary"  (click)="csvInput.click()">Choose Spreadsheet File (CSV)</button>
+    <h1 style="padding-left:50px;padding-right:50px">Work Order List</h1>
+    <div class="col-md-3">
+      <input type="file" #file placeholder="Choose file" (change)="uploadFile(file.files)" style="display:none;">
+      <button type="button" class="btn btn-success" (click)="file.click()">Upload File</button>
+    </div>
+    <div class="col-md-4">
+      <span class="upload" *ngIf="progress > 0">
+        {{progress}}%
+      </span>
+      <span class="upload" *ngIf="message">
+        {{message}}
+      </span>
+    </div>
   </mat-toolbar-row>
 </mat-toolbar>
 <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">

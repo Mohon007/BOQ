@@ -330,7 +330,7 @@ export class StandardSpecificationClient implements IStandardSpecificationClient
 
 export interface IWorkOrderClient {
     get(id: number): Observable<WorkOrderModel>;
-    upsert(path: string | null | undefined): Observable<void>;
+    upload(): Observable<void>;
     getAll(): Observable<WorkOrderListModel>;
     delete(id: number): Observable<void>;
 }
@@ -404,10 +404,8 @@ export class WorkOrderClient implements IWorkOrderClient {
         return _observableOf<WorkOrderModel>(<any>null);
     }
 
-    upsert(path: string | null | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/api/WorkOrder/Upsert?";
-        if (path !== undefined && path !== null)
-            url_ += "path=" + encodeURIComponent("" + path) + "&";
+    upload(): Observable<void> {
+        let url_ = this.baseUrl + "/api/WorkOrder/Upload";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -418,11 +416,11 @@ export class WorkOrderClient implements IWorkOrderClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpsert(response_);
+            return this.processUpload(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processUpsert(<any>response_);
+                    return this.processUpload(<any>response_);
                 } catch (e) {
                     return <Observable<void>><any>_observableThrow(e);
                 }
@@ -431,7 +429,7 @@ export class WorkOrderClient implements IWorkOrderClient {
         }));
     }
 
-    protected processUpsert(response: HttpResponseBase): Observable<void> {
+    protected processUpload(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
