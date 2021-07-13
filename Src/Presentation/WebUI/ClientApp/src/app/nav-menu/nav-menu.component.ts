@@ -1,3 +1,4 @@
+import { HostListener, OnDestroy } from '@angular/core';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -6,12 +7,15 @@ import { Router } from '@angular/router';
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.css']
 })
-export class NavMenuComponent {
+export class NavMenuComponent implements OnDestroy {
   loggedIn: boolean;
   loginbuttonText: string="LogIn";
   constructor(private route: Router) {
     localStorage.getItem("loggedIn") === 'YES' ? this.loggedIn = true : this.loggedIn = false;
   }
+    ngOnDestroy(): void {
+      localStorage.removeItem('loggedIn');
+    }
   login() {
     if (this.loggedIn) {
       this.loggedIn = false;
@@ -25,6 +29,11 @@ export class NavMenuComponent {
       this.loginbuttonText = "Logout";
       localStorage.setItem("loggedIn", "YES");
     }
+
+  }
+  @HostListener('window:beforeunload', ['$event'])
+  onWindowClose(event: any): void {
+    localStorage.removeItem('loggedIn');
 
   }
 }

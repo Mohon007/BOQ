@@ -1,9 +1,8 @@
-<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-  <a class="navbar-brand" href="#">BOQ</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarCollapse">
+
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary">
+  <img src="../../assets/Images/UniCorn.jpg" alt="Logo">
+  <div class="container">
+    <a class="navbar-brand" routerLink='/' routerLinkActive='active'>UNIPACK BOQ</a>
     <ul class="navbar-nav mr-auto" *ngIf="loggedIn">
       <li class="nav-item">
         <a class="nav-link" [routerLink]="['/workorder-info']">Work Order</a>
@@ -15,8 +14,8 @@
         <a class="nav-link" [routerLink]="['/boq-report']">BOQ Report</a>
       </li>
     </ul>
-    <form  #loginForm="ngForm" class="form-inline mt-2 mt-md-0" (ngSubmit)="login()"
-          autocomplete="off" >
+    <form #loginForm="ngForm" class="form-inline mt-2 mt-md-0" (ngSubmit)="login()"
+          autocomplete="off">
       <input name="username" *ngIf="!loggedIn"
              class="form-control mr-sm-2"
              type="text"
@@ -28,4 +27,5 @@
       <button class="btn btn-success my-2 my-sm-0" type="submit">{{loginbuttonText}}</button>
     </form>
   </div>
+
 </nav>
