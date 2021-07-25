@@ -269,6 +269,45 @@
           }
         }
       }
+    },
+    "/api/WorkOrder/Update": {
+      "post": {
+        "tags": [
+          "WorkOrder"
+        ],
+        "operationId": "WorkOrder_Update",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "name": "command",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/UpsertWorkOrderCommand"
+              }
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "default": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ProblemDetails"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -432,7 +471,11 @@
         "id",
         "quantity",
         "unitPrice",
-        "createdDate"
+        "createdDate",
+        "ups",
+        "qtyPersheet",
+        "sheetInReem",
+        "rimPrice"
       ],
       "properties": {
         "id": {
@@ -465,6 +508,22 @@
         "createdDate": {
           "type": "string",
           "format": "date-time"
+        },
+        "ups": {
+          "type": "number",
+          "format": "double"
+        },
+        "qtyPersheet": {
+          "type": "number",
+          "format": "double"
+        },
+        "sheetInReem": {
+          "type": "number",
+          "format": "double"
+        },
+        "rimPrice": {
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -478,6 +537,16 @@
           }
         }
       }
+    },
+    "UpsertWorkOrderCommand": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/WorkOrderModel"
+        },
+        {
+          "type": "object"
+        }
+      ]
     }
   }
 }

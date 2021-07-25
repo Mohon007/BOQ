@@ -17,5 +17,9 @@ namespace Domain.Entities
         public string Specification { get; set; }
         public string WorkOrderno { get; set; }
         public DateTime CreatedDate { get; set; }
+        public double UPS { get; set; }
+        public double QtyPersheet { get; set; }
+        public double SheetInReem { get; set; }
+        public double RimPrice { get; set; }
     }
 }

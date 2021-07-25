@@ -21,6 +21,12 @@ namespace Application.WorkOrders.Model
         public double UnitPrice { get; set; }
         public string WorkOrderno { get; set; }
         public DateTime CreatedDate { get; set; }
+        //Update Field//
+        public double UPS { get; set; }
+        public double QtyPersheet { get; set; }
+        public double SheetInReem { get; set; }
+        public double RimPrice { get; set; }
+
         public void Mapping(Profile profile)
         {
             profile.CreateMap<WorkOrder, WorkOrderModel>();

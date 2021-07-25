@@ -1,3 +1,4 @@
+import { SelectionModel } from '@angular/cdk/collections';
 import { HttpClient, HttpEventType } from '@angular/common/http';
 import { AfterViewInit, Inject, OnInit, Optional } from '@angular/core';
 import { ViewChild } from '@angular/core';
@@ -14,9 +15,10 @@ import { API_BASE_URL, WorkOrderClient, WorkOrderListModel, WorkOrderModel } fro
 })
 /** workorder-list component*/
 export class WorkorderListComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['id', 'workOrderno', 'productCode', 'productName', 'unit', 'quantity', 'unitPrice', 'createdDate'];
+  displayedColumns: string[] = ['select','id', 'workOrderno', 'productCode', 'productName', 'unit', 'quantity', 'unitPrice', 'createdDate','ups','qtyPersheet','sheetInReem','rimPrice'];
   /*  data: WorkOrderModel[] = [];*/
   dataSource: MatTableDataSource<WorkOrderModel>;
+  selection = new SelectionModel<WorkOrderModel>(true, []);
   public baseUrl: string;
   /** workorder-list ctor */
   constructor(public service: WorkOrderClient, public http: HttpClient
@@ -38,7 +40,9 @@ export class WorkorderListComponent implements OnInit, AfterViewInit {
   LoadData() {
     this.service.getAll().subscribe(data => {
       this.dataSource = new MatTableDataSource(data.workOrders);
+     
       this.dataSource.sort = this.sort;
+      this.paginator.pageSize = 10;
       this.dataSource.paginator = this.paginator;
     });
   }
@@ -56,5 +60,24 @@ export class WorkorderListComponent implements OnInit, AfterViewInit {
         this.LoadData();
         }
       );
+  }
+
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    this.isAllSelected() ?
+      this.selection.clear() :
+      this.dataSource.data.forEach(row => this.selection.select(row));
+  }
+  GenerateReport() {
+    this.service.update(this.selection.selected).subscribe(data => {
+
+    });
+    console.log(this.selection.selected, "Selection");
   }
 }

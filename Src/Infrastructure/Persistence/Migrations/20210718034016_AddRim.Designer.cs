@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence;
 
 namespace Persistence.Migrations
 {
     [DbContext(typeof(BoqDbContext))]
-    partial class BoqDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210718034016_AddRim")]
+    partial class AddRim
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,23 +76,11 @@ namespace Persistence.Migrations
                     b.Property<string>("ProductName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("QtyPersheet")
-                        .HasColumnType("float");
-
                     b.Property<double>("Quantity")
-                        .HasColumnType("float");
-
-                    b.Property<double>("RimPrice")
-                        .HasColumnType("float");
-
-                    b.Property<double>("SheetInReem")
                         .HasColumnType("float");
 
                     b.Property<string>("Specification")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("UPS")
-                        .HasColumnType("float");
 
                     b.Property<string>("Unit")
                         .HasColumnType("nvarchar(max)");

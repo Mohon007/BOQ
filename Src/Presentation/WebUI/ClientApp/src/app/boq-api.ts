@@ -333,6 +333,7 @@ export interface IWorkOrderClient {
     upload(): Observable<void>;
     getAll(): Observable<WorkOrderListModel>;
     delete(id: number): Observable<void>;
+    update(command: UpsertWorkOrderCommand[]): Observable<void>;
 }
 
 @Injectable()
@@ -550,6 +551,56 @@ export class WorkOrderClient implements IWorkOrderClient {
             }));
         }
         return _observableOf<void>(<any>null);
+    }
+
+    update(command: UpsertWorkOrderCommand[]): Observable<void> {
+        let url_ = this.baseUrl + "/api/WorkOrder/Update";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdate(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdate(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let resultdefault: any = null;
+            let resultDatadefault = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            resultdefault = ProblemDetails.fromJS(resultDatadefault);
+            return throwException("A server side error occurred.", status, _responseText, _headers, resultdefault);
+            }));
+        }
     }
 }
 
@@ -878,6 +929,10 @@ export class WorkOrderModel implements IWorkOrderModel {
     unitPrice!: number;
     workOrderno?: string | undefined;
     createdDate!: Date;
+    ups!: number;
+    qtyPersheet!: number;
+    sheetInReem!: number;
+    rimPrice!: number;
 
     constructor(data?: IWorkOrderModel) {
         if (data) {
@@ -899,6 +954,10 @@ export class WorkOrderModel implements IWorkOrderModel {
             this.unitPrice = _data["unitPrice"];
             this.workOrderno = _data["workOrderno"];
             this.createdDate = _data["createdDate"] ? new Date(_data["createdDate"].toString()) : <any>undefined;
+            this.ups = _data["ups"];
+            this.qtyPersheet = _data["qtyPersheet"];
+            this.sheetInReem = _data["sheetInReem"];
+            this.rimPrice = _data["rimPrice"];
         }
     }
 
@@ -920,6 +979,10 @@ export class WorkOrderModel implements IWorkOrderModel {
         data["unitPrice"] = this.unitPrice;
         data["workOrderno"] = this.workOrderno;
         data["createdDate"] = this.createdDate ? this.createdDate.toISOString() : <any>undefined;
+        data["ups"] = this.ups;
+        data["qtyPersheet"] = this.qtyPersheet;
+        data["sheetInReem"] = this.sheetInReem;
+        data["rimPrice"] = this.rimPrice;
         return data; 
     }
 }
@@ -934,6 +997,10 @@ export interface IWorkOrderModel {
     unitPrice: number;
     workOrderno?: string | undefined;
     createdDate: Date;
+    ups: number;
+    qtyPersheet: number;
+    sheetInReem: number;
+    rimPrice: number;
 }
 
 export class WorkOrderListModel implements IWorkOrderListModel {
@@ -978,6 +1045,33 @@ export class WorkOrderListModel implements IWorkOrderListModel {
 
 export interface IWorkOrderListModel {
     workOrders?: WorkOrderModel[] | undefined;
+}
+
+export class UpsertWorkOrderCommand extends WorkOrderModel implements IUpsertWorkOrderCommand {
+
+    constructor(data?: IUpsertWorkOrderCommand) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+    }
+
+    static fromJS(data: any): UpsertWorkOrderCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpsertWorkOrderCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data; 
+    }
+}
+
+export interface IUpsertWorkOrderCommand extends IWorkOrderModel {
 }
 
 export class SwaggerException extends Error {

@@ -29,7 +29,7 @@ namespace WebUI.Controllers
             };
             return Ok(vm);
         }
-      
+
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
@@ -45,7 +45,7 @@ namespace WebUI.Controllers
                 var fullPath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\workorder", fileName);
                 using (var stream = new FileStream(fullPath, FileMode.Create))
                 {
-                   await file.CopyToAsync(stream);
+                    await file.CopyToAsync(stream);
                 }
                 List<int> ids = new List<int>();
                 var value = CsvFileHelper.ReadCsvFile<WorkOrderDummyModel>("wwwroot/workorder/" + fileName);
@@ -69,7 +69,7 @@ namespace WebUI.Controllers
             {
                 return BadRequest();
             }
-        
+
         }
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -86,6 +86,22 @@ namespace WebUI.Controllers
 
             return NoContent();
         }
-
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType]
+        public async Task<IActionResult> Update(List<UpsertWorkOrderCommand> command)
+        {
+            List<int> ids = new List<int>();
+            foreach (var item in command)
+            {
+                UpsertWorkOrderCommand cmd = new UpsertWorkOrderCommand();
+                var id = await Mediator.Send(cmd);
+                ids.Add(id);
+            }
+            return Ok(ids);
+        }
     }
 }
+
+
+
