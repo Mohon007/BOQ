@@ -333,7 +333,7 @@ export interface IWorkOrderClient {
     upload(): Observable<void>;
     getAll(): Observable<WorkOrderListModel>;
     delete(id: number): Observable<void>;
-    update(command: UpsertWorkOrderCommand[]): Observable<void>;
+    update(command: UpsertWorkOrderCommand[]): Observable<number[]>;
 }
 
 @Injectable()
@@ -553,7 +553,7 @@ export class WorkOrderClient implements IWorkOrderClient {
         return _observableOf<void>(<any>null);
     }
 
-    update(command: UpsertWorkOrderCommand[]): Observable<void> {
+    update(command: UpsertWorkOrderCommand[]): Observable<number[]> {
         let url_ = this.baseUrl + "/api/WorkOrder/Update";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -565,6 +565,7 @@ export class WorkOrderClient implements IWorkOrderClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             })
         };
 
@@ -575,14 +576,14 @@ export class WorkOrderClient implements IWorkOrderClient {
                 try {
                     return this.processUpdate(<any>response_);
                 } catch (e) {
-                    return <Observable<void>><any>_observableThrow(e);
+                    return <Observable<number[]>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<void>><any>_observableThrow(response_);
+                return <Observable<number[]>><any>_observableThrow(response_);
         }));
     }
 
-    protected processUpdate(response: HttpResponseBase): Observable<void> {
+    protected processUpdate(response: HttpResponseBase): Observable<number[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -591,7 +592,17 @@ export class WorkOrderClient implements IWorkOrderClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(<any>null);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(item);
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
             }));
         } else {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
@@ -929,6 +940,8 @@ export class WorkOrderModel implements IWorkOrderModel {
     unitPrice!: number;
     workOrderno?: string | undefined;
     createdDate!: Date;
+    matName?: string | undefined;
+    matUnit?: string | undefined;
     ups!: number;
     qtyPersheet!: number;
     sheetInReem!: number;
@@ -954,6 +967,8 @@ export class WorkOrderModel implements IWorkOrderModel {
             this.unitPrice = _data["unitPrice"];
             this.workOrderno = _data["workOrderno"];
             this.createdDate = _data["createdDate"] ? new Date(_data["createdDate"].toString()) : <any>undefined;
+            this.matName = _data["matName"];
+            this.matUnit = _data["matUnit"];
             this.ups = _data["ups"];
             this.qtyPersheet = _data["qtyPersheet"];
             this.sheetInReem = _data["sheetInReem"];
@@ -979,6 +994,8 @@ export class WorkOrderModel implements IWorkOrderModel {
         data["unitPrice"] = this.unitPrice;
         data["workOrderno"] = this.workOrderno;
         data["createdDate"] = this.createdDate ? this.createdDate.toISOString() : <any>undefined;
+        data["matName"] = this.matName;
+        data["matUnit"] = this.matUnit;
         data["ups"] = this.ups;
         data["qtyPersheet"] = this.qtyPersheet;
         data["sheetInReem"] = this.sheetInReem;
@@ -997,6 +1014,8 @@ export interface IWorkOrderModel {
     unitPrice: number;
     workOrderno?: string | undefined;
     createdDate: Date;
+    matName?: string | undefined;
+    matUnit?: string | undefined;
     ups: number;
     qtyPersheet: number;
     sheetInReem: number;

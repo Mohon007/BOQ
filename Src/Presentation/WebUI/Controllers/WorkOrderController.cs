@@ -89,12 +89,11 @@ namespace WebUI.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        public async Task<IActionResult> Update(List<UpsertWorkOrderCommand> command)
+        public async Task<ActionResult<IList<int>>> Update(List<UpsertWorkOrderCommand> command)
         {
             List<int> ids = new List<int>();
-            foreach (var item in command)
+            foreach (var cmd in command)
             {
-                UpsertWorkOrderCommand cmd = new UpsertWorkOrderCommand();
                 var id = await Mediator.Send(cmd);
                 ids.Add(id);
             }

@@ -6,8 +6,10 @@
       <input type="file" #file placeholder="Choose file" (change)="uploadFile(file.files)" style="display:none;">
       <button type="button" class="btn btn-success" (click)="file.click()">Upload File</button>
     </div>
+    <div class="col-md-1">
+    </div>
     <div class="col-md-3">
-      <button type="button" class="btn btn-success" (click)="GenerateReport()">Generate Report</button>
+      <button type="button" style="background-color:brown;float:right" class="btn btn-success" (click)="GenerateReport()">Generate Report</button>
     </div>
 
     <div class="col-md-4">
@@ -20,7 +22,7 @@
     </div>
   </mat-toolbar-row>
 </mat-toolbar>
-<table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+<table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8" #table #exporter="matTableExporter" matTableExporter>
 
   <ng-container matColumnDef="select">
     <th mat-header-cell *matHeaderCellDef>
@@ -47,25 +49,25 @@
 
   <ng-container matColumnDef="workOrderno">
     <th mat-header-cell *matHeaderCellDef mat-sort-header> Work Order No </th>
-    <td mat-cell *matCellDef="let element"> {{element.workOrderno}} </td>
+    <td mat-cell *matCellDef="let element" style="width:80px"> {{element.workOrderno}} </td>
   </ng-container>
 
   <!-- Name Column -->
   <ng-container matColumnDef="productCode">
     <th mat-header-cell *matHeaderCellDef mat-sort-header> productCode </th>
-    <td mat-cell *matCellDef="let element"> {{element.productCode}} </td>
+    <td mat-cell *matCellDef="let element" style="width:70px"> {{element.productCode}} </td>
   </ng-container>
 
   <!-- Weight Column -->
   <ng-container matColumnDef="productName">
     <th mat-header-cell *matHeaderCellDef mat-sort-header> productName </th>
-    <td mat-cell *matCellDef="let element"> {{element.productName}} </td>
+    <td mat-cell *matCellDef="let element" style="width:150px"> {{element.productName}} </td>
   </ng-container>
 
   <!-- Symbol Column -->
   <ng-container matColumnDef="unit">
     <th mat-header-cell *matHeaderCellDef mat-sort-header> unit </th>
-    <td mat-cell *matCellDef="let element"> {{element.unit}} </td>
+    <td mat-cell *matCellDef="let element" style="width:40px"> {{element.unit}} </td>
   </ng-container>
 
   <ng-container matColumnDef="quantity">
@@ -82,24 +84,43 @@
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Date </th>
     <td mat-cell *matCellDef="let element"> {{element.createdDate| date:'dd-MM-yyyy'}} </td>
   </ng-container>
-  <ng-container matColumnDef="ups">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>UPS </th>
-    <td mat-cell *matCellDef="let element"> <input type="number" name="ups{{element.id}}" min="0.0" [(ngModel)]="element.ups" style="width:100px" placeholder="UPS"> </td>
+
+  <ng-container matColumnDef="matName">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Materials Name</th>
+    <td mat-cell *matCellDef="let element"> <input type="text" name="matName{{element.id}}" [(ngModel)]="element.matName" style="width:200px" placeholder="Input Materials Name"> </td>
   </ng-container>
 
+  <ng-container matColumnDef="matUnit">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Materials Unit</th>
+    <td mat-cell *matCellDef="let element">
+      <select type="text" name="matUnit{{element.id}}" [(ngModel)]="element.matUnit" style="width:80px" placeholder="Materials Unit">
+        <option>Piece</option>
+        <option>Box</option>
+        <option>Pack</option>
+      </select>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="ups">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>UPS </th>
+    <td mat-cell *matCellDef="let element"> <input type="number" name="ups{{element.id}}" min="0.0" [(ngModel)]="element.ups" style="width:80px" placeholder="UPS"> </td>
+  </ng-container>
+
+
+
   <ng-container matColumnDef="qtyPersheet">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Qty Per Sheet </th>
-    <td mat-cell *matCellDef="let element"> <input type="number" style="width:100px" min="0.0" name="qtypersheet{{element.id}}" [(ngModel)]="element.qtyPersheet" placeholder="Qty Per Sheet"> </td>
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>PC/ BOX per Sheet </th>
+    <td mat-cell *matCellDef="let element" style="width:85px"> <input type="number" style="width:80px" (ngModelChange)="Calculate(element)" min="0.0" name="qtypersheet{{element.id}}" [(ngModel)]="element.qtyPersheet" placeholder="Qty Per Sheet"> </td>
   </ng-container>
 
   <ng-container matColumnDef="sheetInReem">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Sheet In Reem </th>
-    <td mat-cell *matCellDef="let element">  <input type="number" style="width:100px" min="0.0" name="sheetinreem{{element.id}}" [(ngModel)]="element.sheetInReem" placeholder="Sheet In Reem"> </td>
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Sheets in RIM </th>
+    <td mat-cell *matCellDef="let element">  <input type="number" style="width:80px" (ngModelChange)="Calculate(element)" min="0.0" name="sheetinreem{{element.id}}" [(ngModel)]="element.sheetInReem" placeholder="Sheet In Reem"> </td>
   </ng-container>
 
   <ng-container matColumnDef="rimPrice">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Rim Price </th>
-    <td mat-cell *matCellDef="let element">  <input type="number" style="width:100px" min="0.0" name="rimprice{{element.id}}" [(ngModel)]="element.rimPrice" placeholder="Rim Price"> </td>
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>RIM Price/Unit </th>
+    <td mat-cell *matCellDef="let element">  <input type="number" style="width:80px" (ngModelChange)="Calculate(element)" min="0.0" name="rimprice{{element.id}}" [(ngModel)]="element.rimPrice" placeholder="Rim Price"> </td>
   </ng-container>
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>

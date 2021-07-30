@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatTableExporterModule } from 'mat-table-exporter';
 import { AppSharedModule } from '../app-shared/app-shared.module';
 import { environment } from '../environments/environment';
+import { ExcelService } from '../Services/excel.service';
 import { AngularMaterialModule } from './angular-material.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -43,7 +44,7 @@ import { WorkorderListComponent } from './workorder-list/workorder-list.componen
     AppRoutingModule,
     AppSharedModule
   ],
-  providers: [{ provide: API_BASE_URL, useValue: environment.apiBaseUrl },],
+  providers: [{ provide: API_BASE_URL, useValue: environment.apiBaseUrl }, ExcelService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

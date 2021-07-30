@@ -22,6 +22,8 @@ namespace Application.WorkOrders.Model
         public string WorkOrderno { get; set; }
         public DateTime CreatedDate { get; set; }
         //Update Field//
+        public string MatName { get; set; }
+        public string MatUnit { get; set; }
         public double UPS { get; set; }
         public double QtyPersheet { get; set; }
         public double SheetInReem { get; set; }

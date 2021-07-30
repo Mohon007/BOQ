@@ -297,7 +297,15 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
           },
           "default": {
             "x-nullable": false,
@@ -508,6 +516,12 @@
         "createdDate": {
           "type": "string",
           "format": "date-time"
+        },
+        "matName": {
+          "type": "string"
+        },
+        "matUnit": {
+          "type": "string"
         },
         "ups": {
           "type": "number",
